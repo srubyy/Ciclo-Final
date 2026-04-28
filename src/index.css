@@ -1,0 +1,120 @@
+@import 'leaflet/dist/leaflet.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: #0a120d;
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #ffffff15;
+        border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #ffffff25;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 0.4;
+        cursor: pointer;
+    }
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: #111827 !important;
+    }
+
+    nav {
+        display: none !important;
+    }
+
+    main {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    .md\:ml-56 {
+        margin-left: 0 !important;
+    }
+
+    /* Cards and boxes for print */
+    .bg-\[\#141f18\], .bg-white\/5, .bg-black\/20 {
+        background-color: white !important;
+        border: 1px solid #d1d5db !important;
+        box-shadow: none !important;
+    }
+
+    h1, h2, h3, h4 {
+        color: #111827 !important;
+    }
+
+    p, span, div {
+        color: #374151 !important;
+    }
+
+    /* Preserve semantic colors but make them darker for print */
+    .text-green-400, .text-green-500 {
+        color: #15803d !important;
+    }
+
+    .text-red-400, .text-red-500 {
+        color: #b91c1c !important;
+    }
+
+    .text-blue-400, .text-blue-500 {
+        color: #1d4ed8 !important;
+    }
+
+    .text-amber-400, .text-amber-500 {
+        color: #b45309 !important;
+    }
+
+    .text-gray-400, .text-gray-500, .text-gray-600 {
+        color: #4b5563 !important;
+    }
+    
+    .border-white\/8, .border-white\/10 {
+        border-color: #d1d5db !important;
+    }
+
+    /* Grid fixes */
+    .bg-red-500\/20 {
+        background-color: #fee2e2 !important;
+        print-color-adjust: exact;
+    }
+    .bg-green-500\/5 {
+        background-color: #f0fdf4 !important;
+        print-color-adjust: exact;
+    }
+}
