@@ -207,6 +207,9 @@ export const useWasteStore = create<WasteStore>()(
                 }));
             },
         }),
-        { name: 'ciclo-waste-store' }
+        { 
+            name: 'ciclo-waste-store',
+            version: 2,
+        }
     )
 );
