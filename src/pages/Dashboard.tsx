@@ -54,7 +54,7 @@ export default function Dashboard() {
                         </Link>
                         <motion.button
                             whileTap={{ scale: 0.97 }}
-                            onClick={seedDemoData}
+                            onClick={() => seedDemoData()}
                             className="flex items-center gap-2 bg-white/8 text-white border border-white/15 px-5 py-3 rounded-xl font-medium text-sm"
                         >
                             Load Demo Data

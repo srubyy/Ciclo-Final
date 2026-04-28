@@ -126,85 +126,95 @@ export const useWasteStore = create<WasteStore>()(
             },
 
             seedDemoData: (societyName = 'Mayuresh Park', ward = 'S') => {
-                const demoEntries: WasteEntry[] = [];
+                console.log('Seeding demo data...', { societyName, ward });
                 
-                // Realistic Ward Coordinates (Mumbai)
-                const wardCoords: Record<string, [number, number]> = {
-                    'S': [19.145, 72.935],        // Bhandup/Kanjur
-                    'K/E': [19.115, 72.875],   // Andheri East
-                    'G/N': [19.035, 72.845],  // Dadar/Dharavi
-                    'D': [18.965, 72.805],        // Malabar Hill
-                    'H/W': [19.055, 72.835],   // Bandra West
-                    'P/N': [19.185, 72.845],  // Malad
-                    'A': [18.925, 72.825],        // Colaba
-                    'K/W': [19.115, 72.825],   // Andheri West
-                    'L': [19.075, 72.875],        // Kurla
-                    'T': [19.175, 72.955],        // Mulund
-                };
+                try {
+                    // Defensive checks
+                    const safeSocietyName = typeof societyName === 'string' ? societyName : 'Mayuresh Park';
+                    const safeWard = typeof ward === 'string' ? ward : 'S';
 
-                const baseCoord = wardCoords[ward] || [19.076, 72.877];
-                // Add a tiny random offset so societies in the same ward aren't on top of each other
-                const lat = baseCoord[0] + (Math.random() - 0.5) * 0.01;
-                const lng = baseCoord[1] + (Math.random() - 0.5) * 0.01;
+                    const demoEntries: WasteEntry[] = [];
+                    
+                    // Realistic Ward Coordinates (Mumbai)
+                    const wardCoords: Record<string, [number, number]> = {
+                        'S': [19.145, 72.935],        // Bhandup/Kanjur
+                        'K/E': [19.115, 72.875],   // Andheri East
+                        'G/N': [19.035, 72.845],  // Dadar/Dharavi
+                        'D': [18.965, 72.805],        // Malabar Hill
+                        'H/W': [19.055, 72.835],   // Bandra West
+                        'P/N': [19.185, 72.845],  // Malad
+                        'A': [18.925, 72.825],        // Colaba
+                        'K/W': [19.115, 72.825],   // Andheri West
+                        'L': [19.075, 72.875],        // Kurla
+                        'T': [19.175, 72.955],        // Mulund
+                    };
 
-                const isHighCompliance = societyName.includes('Park') || societyName.includes('Heights') || societyName.includes('Lodha');
-                const wingCount = societyName.length % 2 === 0 ? 3 : 2;
-                const households = societyName.length * 4;
+                    const baseCoord = wardCoords[safeWard] || [19.076, 72.877];
+                    const lat = baseCoord[0] + (Math.random() - 0.5) * 0.01;
+                    const lng = baseCoord[1] + (Math.random() - 0.5) * 0.01;
 
-                const mockBuildings = Array.from({ length: wingCount }).map((_, i) => ({
-                    id: `b${i}`,
-                    name: `Wing ${String.fromCharCode(65 + i)}`,
-                    totalFlats: Math.floor(households / wingCount)
-                }));
+                    const isHighCompliance = safeSocietyName.includes('Park') || safeSocietyName.includes('Heights') || safeSocietyName.includes('Lodha');
+                    const wingCount = safeSocietyName.length % 2 === 0 ? 3 : 2;
+                    const households = safeSocietyName.length * 4;
 
-                for (let i = 29; i >= 0; i--) {
-                    const d = new Date();
-                    d.setDate(d.getDate() - i);
-                    mockBuildings.forEach(building => {
-                        const baseWet = isHighCompliance ? 8 : 15;
-                        const baseDry = isHighCompliance ? 4 : 10;
-                        const wet = parseFloat((baseWet + Math.random() * 5).toFixed(2));
-                        const dry = parseFloat((baseDry + Math.random() * 5).toFixed(2));
-                        const recyclable = parseFloat((2.0 + Math.random() * 4).toFixed(2));
-                        const nonSegregatedFlats = isHighCompliance ? (Math.random() > 0.8 ? 1 : 0) : Math.floor(Math.random() * 6);
-                        demoEntries.push({ id: generateId(), date: formatDate(d), buildingId: building.id, wet, dry, recyclable, nonSegregatedFlats });
-                    });
-                }
+                    const mockBuildings = Array.from({ length: wingCount }).map((_, i) => ({
+                        id: `b${i}`,
+                        name: `Wing ${String.fromCharCode(65 + i)}`,
+                        totalFlats: Math.floor(households / wingCount)
+                    }));
 
-                const mockFlats: FlatRecord[] = [];
-                const firstNames = ['Aditya', 'Sneha', 'Rajesh', 'Priya', 'Vikram', 'Anjali', 'Suresh', 'Meera'];
-                const lastNames = ['Patil', 'Kulkarni', 'Deshmukh', 'Pawar', 'Joshi', 'Sawant', 'Gokhale', 'Mane'];
-
-                mockBuildings.forEach(building => {
-                    for (let i = 1; i <= building.totalFlats; i++) {
-                        const floor = Math.ceil(i / 4);
-                        const flatNumber = `${floor}${String(i % 4 || 4).padStart(2, '0')}`;
-                        const isNonCompliant = isHighCompliance ? Math.random() > 0.9 : Math.random() > 0.6;
-                        mockFlats.push({
-                            id: generateId(),
-                            buildingId: building.id,
-                            flatNumber,
-                            residentName: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`,
-                            fines: isNonCompliant ? [{ id: generateId(), date: formatDate(new Date()), amount: 500, reason: 'Incomplete Segregation', status: 'unpaid' }] : [],
-                            complianceScore: isNonCompliant ? 45 : 92,
-                            recentHistory: []
+                    for (let i = 29; i >= 0; i--) {
+                        const d = new Date();
+                        d.setDate(d.getDate() - i);
+                        mockBuildings.forEach(building => {
+                            const baseWet = isHighCompliance ? 8 : 15;
+                            const baseDry = isHighCompliance ? 4 : 10;
+                            const wet = parseFloat((baseWet + Math.random() * 5).toFixed(2));
+                            const dry = parseFloat((baseDry + Math.random() * 5).toFixed(2));
+                            const recyclable = parseFloat((2.0 + Math.random() * 4).toFixed(2));
+                            const nonSegregatedFlats = isHighCompliance ? (Math.random() > 0.8 ? 1 : 0) : Math.floor(Math.random() * 6);
+                            demoEntries.push({ id: generateId(), date: formatDate(d), buildingId: building.id, wet, dry, recyclable, nonSegregatedFlats });
                         });
                     }
-                });
 
-                set(() => ({
-                    entries: demoEntries,
-                    flats: mockFlats,
-                    profile: { 
-                        societyName, 
-                        ward, 
-                        totalHouseholds: households, 
-                        buildings: mockBuildings, 
-                        location: 'Mumbai', 
-                        onboarded: true,
-                        coordinates: [lat, lng] as [number, number]
-                    },
-                }));
+                    const mockFlats: FlatRecord[] = [];
+                    const firstNames = ['Aditya', 'Sneha', 'Rajesh', 'Priya', 'Vikram', 'Anjali', 'Suresh', 'Meera'];
+                    const lastNames = ['Patil', 'Kulkarni', 'Deshmukh', 'Pawar', 'Joshi', 'Sawant', 'Gokhale', 'Mane'];
+
+                    mockBuildings.forEach(building => {
+                        for (let i = 1; i <= building.totalFlats; i++) {
+                            const floor = Math.ceil(i / 4);
+                            const flatNumber = `${floor}${String(i % 4 || 4).padStart(2, '0')}`;
+                            const isNonCompliant = isHighCompliance ? Math.random() > 0.9 : Math.random() > 0.6;
+                            mockFlats.push({
+                                id: generateId(),
+                                buildingId: building.id,
+                                flatNumber,
+                                residentName: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`,
+                                fines: isNonCompliant ? [{ id: generateId(), date: formatDate(new Date()), amount: 500, reason: 'Incomplete Segregation', status: 'unpaid' }] : [],
+                                complianceScore: isNonCompliant ? 45 : 92,
+                                recentHistory: []
+                            });
+                        }
+                    });
+
+                    set(() => ({
+                        entries: demoEntries,
+                        flats: mockFlats,
+                        profile: { 
+                            societyName: safeSocietyName, 
+                            ward: safeWard, 
+                            totalHouseholds: households, 
+                            buildings: mockBuildings, 
+                            location: 'Mumbai', 
+                            onboarded: true,
+                            coordinates: [lat, lng] as [number, number]
+                        },
+                    }));
+                    console.log('Demo data seeded successfully!');
+                } catch (error) {
+                    console.error('Failed to seed demo data:', error);
+                }
             },
         }),
         { 

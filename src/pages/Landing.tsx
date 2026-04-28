@@ -64,7 +64,7 @@ export default function Landing() {
                                 <motion.button
                                     whileHover={{ scale: 1.03 }}
                                     whileTap={{ scale: 0.97 }}
-                                    onClick={seedDemoData}
+                                    onClick={() => seedDemoData()}
                                     className="flex items-center gap-2 bg-white/8 text-white border border-white/15 px-6 py-3.5 rounded-xl font-medium text-sm hover:bg-white/12 transition-colors"
                                 >
                                     Load Demo Data
