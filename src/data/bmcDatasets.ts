@@ -20,6 +20,26 @@ export interface WardMetric {
 
 export const bmcWardsData: WardMetric[] = [
     {
+        ward: 'H/W',
+        description: 'Bandra West, Khar, Santacruz',
+        population: 307000,
+        generationTPD: 410,
+        wetPercentage: 58,
+        dryPercentage: 42,
+        segregationEfficiency: 81,
+        processingCenters: 2
+    },
+    {
+        ward: 'H/E',
+        description: 'Bandra East, Kalina, Vakola',
+        population: 557000,
+        generationTPD: 490,
+        wetPercentage: 61,
+        dryPercentage: 39,
+        segregationEfficiency: 70,
+        processingCenters: 1
+    },
+    {
         ward: 'A',
         description: 'Colaba, Fort, Nariman Point',
         population: 185000,

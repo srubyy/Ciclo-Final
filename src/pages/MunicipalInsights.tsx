@@ -13,8 +13,12 @@ export default function MunicipalInsights() {
     const { entries, profile, getStats } = useWasteStore();
     const stats = getStats(entries);
     
-    // Find the current ward if possible, otherwise default to 'S' (Bhandup)
-    const currentWard = bmcWardsData.find(w => w.ward === 'S') || bmcWardsData[0];
+    // Find the current ward via fuzzy/case-insensitive match, fallback to 'S'
+    const userWard = (profile.ward || '').toUpperCase().trim();
+    const currentWard = bmcWardsData.find(w => w.ward.toUpperCase() === userWard) 
+        || bmcWardsData.find(w => w.ward.toUpperCase().startsWith(userWard)) 
+        || bmcWardsData.find(w => w.ward === 'S') 
+        || bmcWardsData[0];
     
     // Society vs Ward Comparison Data
     const comparisonData = [
@@ -62,7 +66,7 @@ export default function MunicipalInsights() {
                             </div>
                             <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-2xl flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-[#4ade80]" />
-                                <span className="text-xs font-bold text-white uppercase tracking-widest">{currentWard.ward} Ward (South)</span>
+                                <span className="text-xs font-bold text-white uppercase tracking-widest">{currentWard.ward} Ward ({currentWard.description.split(',')[0]})</span>
                             </div>
                         </div>
 
@@ -173,19 +177,6 @@ export default function MunicipalInsights() {
                         </p>
                     </div>
                     
-                    <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-2xl relative overflow-hidden">
-                        <div className="relative z-10">
-                            <Info size={32} className="mb-4 text-blue-200" />
-                            <h4 className="text-xl font-bold mb-2">Municipal Data API</h4>
-                            <p className="text-sm text-blue-500 leading-relaxed mb-6">
-                                Integrate real-time ward data from the official OpenCity Mumbai gateway.
-                            </p>
-                            <button className="bg-white text-blue-700 px-5 py-3 rounded-2xl font-bold text-sm hover:bg-blue-50 transition-colors w-full">
-                                Connect Portal
-                            </button>
-                        </div>
-                        <div className="absolute -bottom-6 -right-6 text-8xl opacity-10 font-black">BMC</div>
-                    </div>
                 </div>
             </div>
         </Layout>

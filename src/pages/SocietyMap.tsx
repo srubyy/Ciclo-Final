@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import Layout from '../layouts/Layout';
 import { useWasteStore } from '../store/useWasteStore';
-import { Building2, Info, ArrowUpRight, AlertCircle, Droplets, Box, Recycle, MapPin } from 'lucide-react';
+import { Building2, Info, ArrowUpRight, AlertCircle, Droplets, Box, Recycle, MapPin, CheckCircle2 } from 'lucide-react';
 import { MapContainer, TileLayer, Circle, Popup, useMap } from 'react-leaflet';
+import L from 'leaflet';
 
 // Helper to handle map centering
 function ChangeView({ center, zoom }: { center: [number, number], zoom: number }) {
@@ -19,6 +20,8 @@ export default function SocietyMap() {
     const { profile, entries } = useWasteStore();
     const location = useLocation();
     const [selectedWing, setSelectedWing] = useState<string | null>(null);
+    const [isNotifying, setIsNotifying] = useState(false);
+    const [notifiedWings, setNotifiedWings] = useState<Set<string>>(new Set());
 
     const defaultCenter: [number, number] = profile.coordinates || [19.1413, 72.9360];
 
@@ -28,6 +31,24 @@ export default function SocietyMap() {
             setSelectedWing(state.selectedWing);
         }
     }, [location]);
+
+    const handleNotify = (wingId: string) => {
+        setIsNotifying(true);
+        // Simulate network request
+        setTimeout(() => {
+            setIsNotifying(false);
+            setNotifiedWings(prev => new Set(prev).add(wingId));
+            
+            // Reset after 3 seconds
+            setTimeout(() => {
+                setNotifiedWings(prev => {
+                    const next = new Set(prev);
+                    next.delete(wingId);
+                    return next;
+                });
+            }, 3000);
+        }, 1200);
+    };
 
     // Calculate wing data for the heatmap
     const wingStats = profile.buildings.map(building => {
@@ -278,8 +299,27 @@ export default function SocietyMap() {
                                 </div>
 
                                 <div className="mt-8">
-                                    <button className="w-full bg-white text-black py-4 rounded-2xl font-bold text-sm hover:bg-gray-200 transition-colors shadow-xl">
-                                        Notify Wing Manager
+                                    <button 
+                                        onClick={() => handleNotify(activeWing.id)}
+                                        disabled={isNotifying || notifiedWings.has(activeWing.id)}
+                                        className={`w-full py-4 rounded-2xl font-bold text-sm transition-all shadow-xl flex items-center justify-center gap-2
+                                            ${notifiedWings.has(activeWing.id)
+                                                ? 'bg-[#4ade80] text-black hover:bg-[#4ade80]'
+                                                : isNotifying
+                                                    ? 'bg-gray-300 text-gray-500 cursor-wait'
+                                                    : 'bg-white text-black hover:bg-gray-200'
+                                            }`}
+                                    >
+                                        {notifiedWings.has(activeWing.id) ? (
+                                            <>
+                                                <CheckCircle2 size={18} />
+                                                Manager Notified
+                                            </>
+                                        ) : isNotifying ? (
+                                            'Sending Alert...'
+                                        ) : (
+                                            'Notify Wing Manager'
+                                        )}
                                     </button>
                                     <p className="text-[10px] text-center text-gray-500 mt-4 leading-relaxed">
                                         Data based on the last 30 days of society-wide collective records.
