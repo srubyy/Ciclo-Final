@@ -28,9 +28,10 @@ export default function BMCDashboard() {
     const [selectedWard, setSelectedWard] = useState('S');
     const [isWardMenuOpen, setIsWardMenuOpen] = useState(false);
     const [activeQueue, setActiveQueue] = useState([
-        { id: 1, name: societiesByWard['S'][2], reason: 'Contaminated Wet Stream', tons: '1.2T', risk: 'High' },
-        { id: 2, name: societiesByWard['S'][1], reason: 'Recurring No-Segregation', tons: '0.8T', risk: 'Medium' },
-        { id: 3, name: societiesByWard['S'][4], reason: 'Composter Overflow', tons: '0.5T', risk: 'Low' }
+        { id: 1, name: societiesByWard['S'][0] || 'Unknown Society', reason: 'Contaminated Wet Stream', tons: '1.2T', risk: 'High' },
+        { id: 2, name: societiesByWard['S'][1] || 'Unknown Society', reason: 'Recurring No-Segregation', tons: '0.8T', risk: 'Medium' },
+        { id: 3, name: societiesByWard['S'][2] || 'Unknown Society', reason: 'Composter Overflow', tons: '0.5T', risk: 'Low' },
+        { id: 4, name: 'Liberty Garden', reason: 'Unregistered Vendor Dumping', tons: '2.1T', risk: 'Critical' }
     ]);
     const [actionMessage, setActionMessage] = useState<string | null>(null);
 
@@ -234,7 +235,12 @@ export default function BMCDashboard() {
                 <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/2">
                     <div>
                         <h3 className="text-xl font-bold text-white flex items-center gap-3">
-                            Enforcement Dispatch Queue <span className="px-2 py-0.5 bg-red-500 text-[10px] rounded-full">4 Pending</span>
+                            Enforcement Dispatch Queue 
+                            {activeQueue.length > 0 && (
+                                <span className="px-2 py-0.5 bg-red-500 text-[10px] rounded-full">
+                                    {activeQueue.length} Pending
+                                </span>
+                            )}
                         </h3>
                         <p className="text-xs text-gray-500 mt-1">Societies flagged for 3+ days of critical non-compliance</p>
                     </div>

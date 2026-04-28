@@ -11,7 +11,7 @@ const adminNavItems = [
     { to: '/map', icon: LayoutIcon, label: 'Society Map' },
     { to: '/action-plan', icon: ClipboardList, label: 'Action Plan' },
     { to: '/log', icon: PlusCircle, label: 'Log' },
-    { to: '/community', icon: Users, label: 'Districts' },
+    { to: '/community', icon: Users, label: 'Disposal Guide' },
     { to: '/bmc-report', icon: FileCheck, label: 'BMC Report' },
     { to: '/municipal-benchmarks', icon: BarChart2, label: 'Benchmarks' },
 ];
@@ -20,7 +20,7 @@ const bmcNavItems = [
     { to: '/bmc-dashboard', icon: BarChart2, label: 'Ward Oversight' },
     { to: '/bmc/enforcement', icon: Gavel, label: 'Enforcement Center' },
     { to: '/bmc/routes', icon: Truck, label: 'Route Optimization' },
-    { to: '/community', icon: Users, label: 'Districts' },
+    { to: '/community', icon: Users, label: 'Disposal Guide' },
 ];
 
 export default function Navbar() {
