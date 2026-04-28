@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { BarChart2, Home, PlusCircle, Users, FileCheck, Trophy, Layout as LayoutIcon, ClipboardList, LogOut, ShieldCheck, Gavel, Truck } from 'lucide-react';
+import { BarChart2, Home, PlusCircle, Users, FileCheck, Trophy, Layout as LayoutIcon, ClipboardList, LogOut, ShieldCheck, Gavel, Truck, MapPin } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 
 const adminNavItems = [
@@ -11,7 +11,7 @@ const adminNavItems = [
     { to: '/map', icon: LayoutIcon, label: 'Society Map' },
     { to: '/action-plan', icon: ClipboardList, label: 'Action Plan' },
     { to: '/log', icon: PlusCircle, label: 'Log' },
-    { to: '/community', icon: Users, label: 'Disposal Guide' },
+    { to: '/community', icon: Users, label: 'Districts' },
     { to: '/bmc-report', icon: FileCheck, label: 'BMC Report' },
     { to: '/municipal-benchmarks', icon: BarChart2, label: 'Benchmarks' },
 ];
@@ -20,7 +20,7 @@ const bmcNavItems = [
     { to: '/bmc-dashboard', icon: BarChart2, label: 'Ward Oversight' },
     { to: '/bmc/enforcement', icon: Gavel, label: 'Enforcement Center' },
     { to: '/bmc/routes', icon: Truck, label: 'Route Optimization' },
-    { to: '/community', icon: Users, label: 'Disposal Guide' },
+    { to: '/disposal-guide', icon: MapPin, label: 'Disposal Guide' },
 ];
 
 export default function Navbar() {

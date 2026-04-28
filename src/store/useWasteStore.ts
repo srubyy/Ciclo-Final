@@ -131,11 +131,15 @@ export const useWasteStore = create<WasteStore>()(
                 // Realistic Ward Coordinates (Mumbai)
                 const wardCoords: Record<string, [number, number]> = {
                     'S': [19.145, 72.935],        // Bhandup/Kanjur
-                    'K-East': [19.115, 72.875],   // Andheri East
-                    'G-North': [19.035, 72.845],  // Dadar/Dharavi
+                    'K/E': [19.115, 72.875],   // Andheri East
+                    'G/N': [19.035, 72.845],  // Dadar/Dharavi
                     'D': [18.965, 72.805],        // Malabar Hill
-                    'H-West': [19.055, 72.835],   // Bandra West
-                    'P-North': [19.185, 72.845],  // Malad
+                    'H/W': [19.055, 72.835],   // Bandra West
+                    'P/N': [19.185, 72.845],  // Malad
+                    'A': [18.925, 72.825],        // Colaba
+                    'K/W': [19.115, 72.825],   // Andheri West
+                    'L': [19.075, 72.875],        // Kurla
+                    'T': [19.175, 72.955],        // Mulund
                 };
 
                 const baseCoord = wardCoords[ward] || [19.076, 72.877];

@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import LogWaste from './pages/LogWaste';
 import Community from './pages/Community';
 import BMCReport from './pages/BMCReport';
+import DisposalGuide from './pages/DisposalGuide';
 import Directory from './pages/Directory';
 import Leaderboard from './pages/Leaderboard';
 import SocietyMap from './pages/SocietyMap';
@@ -48,6 +49,7 @@ export default function App() {
                 <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
                 <Route path="/map" element={<ProtectedRoute><SocietyMap /></ProtectedRoute>} />
                 <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+                <Route path="/disposal-guide" element={<ProtectedRoute><DisposalGuide /></ProtectedRoute>} />
                 <Route path="/bmc/enforcement" element={<ProtectedRoute><EnforcementCenter /></ProtectedRoute>} />
                 <Route path="/bmc/routes" element={<ProtectedRoute><RouteOptimization /></ProtectedRoute>} />
 

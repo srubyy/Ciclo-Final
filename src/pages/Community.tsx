@@ -1,248 +1,132 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
 import Layout from '../layouts/Layout';
-import { 
-    Recycle, MapPin, Truck, Factory, Leaf, Monitor, 
-    Phone, ExternalLink, ShieldCheck, Cpu, Droplets, 
-    Box, Newspaper, ChevronRight
-} from 'lucide-react';
+import { useWasteStore } from '../store/useWasteStore';
+import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts';
 
-const wasteCategories = [
-    {
-        id: 'metal',
-        name: 'Metal Scraps',
-        currentLoad: '4,250',
-        icon: Factory,
-        color: 'from-gray-500 to-slate-700',
-        textColor: 'text-gray-400',
-        bgLight: 'bg-gray-500/10',
-        borderLight: 'border-gray-500/20',
-        ecoMethod: 'Industrial smelting & metallurgical recovery to prevent ore mining.',
-        centers: [
-            { name: 'Kurla Industrial Scrap Market', type: 'Large-Scale Smelting', ward: 'L Ward', phone: '+91 22 2503 8911', dist: '3.2 km', pricePerKg: '₹18' },
-            { name: 'Sakinaka Metal Recovery', type: 'Alloy Separation', ward: 'L Ward', phone: '+91 22 2850 1123', dist: '5.1 km', pricePerKg: '₹22' }
-        ]
-    },
-    {
-        id: 'ewaste',
-        name: 'E-Waste',
-        currentLoad: '1,820',
-        icon: Cpu,
-        color: 'from-indigo-500 to-purple-700',
-        textColor: 'text-indigo-400',
-        bgLight: 'bg-indigo-500/10',
-        borderLight: 'border-indigo-500/20',
-        ecoMethod: 'Specialized dismantling and extraction of precious metals (Gold, Lithium, Copper) without soil leaching.',
-        centers: [
-            { name: 'EcoReco Recycling Facility', type: 'Authorized Dismantler', ward: 'K/E Ward', phone: '1800-102-1020', dist: '4.8 km', pricePerKg: '₹45' },
-            { name: 'Mahim E-Waste Hub', type: 'PCB Extraction', ward: 'G/N Ward', phone: '+91 22 2444 5566', dist: '8.4 km', pricePerKg: '₹55' }
-        ]
-    },
-    {
-        id: 'organic',
-        name: 'Organic / Wet',
-        currentLoad: '12,400',
-        icon: Droplets,
-        color: 'from-emerald-500 to-teal-700',
-        textColor: 'text-emerald-400',
-        bgLight: 'bg-emerald-500/10',
-        borderLight: 'border-emerald-500/20',
-        ecoMethod: 'Biomethanation for renewable energy grid supply and large-scale municipal composting for agriculture.',
-        centers: [
-            { name: 'Kanjurmarg Bioreactor', type: 'Methane Recovery', ward: 'S Ward', phone: 'BMC Helpdesk', dist: '2.1 km', pricePerKg: '₹0 (Subsidized)' },
-            { name: 'Deonar Composting Plant', type: 'Fertilizer Generation', ward: 'M/E Ward', phone: 'BMC Helpdesk', dist: '9.5 km', pricePerKg: '₹0 (Subsidized)' }
-        ]
-    },
-    {
-        id: 'plastic',
-        name: 'Plastics',
-        currentLoad: '5,600',
-        icon: Box,
-        color: 'from-amber-500 to-orange-700',
-        textColor: 'text-amber-400',
-        bgLight: 'bg-amber-500/10',
-        borderLight: 'border-amber-500/20',
-        ecoMethod: 'Polymer granulation and extrusion for mixing into durable bitumen road construction.',
-        centers: [
-            { name: 'Dharavi Polymer Processors', type: 'Granulation Unit', ward: 'G/N Ward', phone: '+91 98200 12345', dist: '11.0 km', pricePerKg: '₹12' },
-            { name: 'Mulund Plastic Extrusions', type: 'Road Bitumen Mix', ward: 'T Ward', phone: '+91 98200 54321', dist: '6.5 km', pricePerKg: '₹14' }
-        ]
-    },
-    {
-        id: 'paper',
-        name: 'Paper & Cardboard',
-        currentLoad: '8,900',
-        icon: Newspaper,
-        color: 'from-blue-500 to-cyan-700',
-        textColor: 'text-blue-400',
-        bgLight: 'bg-blue-500/10',
-        borderLight: 'border-blue-500/20',
-        ecoMethod: 'Aqueous pulping and de-inking to manufacture recycled packaging cartons and eco-friendly stationary.',
-        centers: [
-            { name: 'Vikhroli Paper Mills', type: 'Pulping & De-inking', ward: 'S Ward', phone: '+91 22 2578 9900', dist: '3.8 km', pricePerKg: '₹10' },
-            { name: 'Ghatkopar Carton Recyclers', type: 'Packaging Manufacturing', ward: 'N Ward', phone: '+91 22 2511 2233', dist: '5.2 km', pricePerKg: '₹11' }
-        ]
-    }
-];
+// Community averages based on the field survey data
+const COMMUNITY_DATA = {
+    locations: [
+        { name: 'Kalyan', wet: 35.0, dry: 24.0, recyclable: 9.0, perHousehold: 1.36 },
+        { name: 'Dombivli', wet: 32.5, dry: 26.0, recyclable: 7.5, perHousehold: 1.32 },
+        { name: 'Ghatkopar', wet: 40.0, dry: 19.0, recyclable: 11.0, perHousehold: 1.40 },
+        { name: 'Bhandup', wet: 37.5, dry: 22.5, recyclable: 10.0, perHousehold: 1.40 },
+        { name: 'Thane', wet: 34.0, dry: 25.0, recyclable: 12.5, perHousehold: 1.43 },
+    ],
+    communityAvg: { perHousehold: 1.38, wet: 35.8, dry: 23.3, recyclable: 10.0 },
+    surveyed: 12,
+    awarenessGap: '80%',
+    willingToAdapt: '70%',
+};
 
 export default function Community() {
-    const [selectedCategory, setSelectedCategory] = useState(wasteCategories[0]);
+    const { entries, getStats, profile } = useWasteStore();
+    const stats = getStats(entries);
+    const userPerHousehold = stats.perHousehold;
+    const communityAvg = COMMUNITY_DATA.communityAvg.perHousehold;
+    const diff = userPerHousehold - communityAvg;
+    const pctDiff = communityAvg > 0 ? ((diff / communityAvg) * 100).toFixed(1) : '0';
+
+    const radarData = [
+        { metric: 'Wet Waste', you: stats.wetPercentage, community: 55 },
+        { metric: 'Dry Waste', you: stats.dryPercentage, community: 35 },
+        { metric: 'Recyclable', you: stats.recyclablePercentage, community: 15 },
+        { metric: 'Segregation', you: stats.recyclablePercentage > 15 ? 75 : 40, community: 55 },
+        { metric: 'Reduction', you: diff < 0 ? 80 : 40, community: 50 },
+    ];
 
     return (
-        <Layout 
-            title="Disposal & Recovery Guide" 
-            subtitle="Eco-friendly disposal methods and official BMC recovery centers by waste category"
-        >
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 mb-8">
-                
-                {/* Left Sidebar: Category Selector */}
-                <div className="xl:col-span-4 flex flex-col gap-4">
-                    <div className="bg-[#141f18] border border-white/8 rounded-[32px] p-6 mb-2">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">Waste Categories</h3>
-                        <div className="space-y-3">
-                            {wasteCategories.map((cat) => {
-                                const Icon = cat.icon;
-                                const isSelected = selectedCategory.id === cat.id;
-                                return (
-                                    <button
-                                        key={cat.id}
-                                        onClick={() => setSelectedCategory(cat)}
-                                        className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all border ${
-                                            isSelected 
-                                                ? `bg-white/10 border-white/20 shadow-lg` 
-                                                : 'bg-black/20 border-white/5 hover:bg-white/5'
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isSelected ? `bg-gradient-to-br ${cat.color} text-white` : 'bg-white/5 text-gray-500'}`}>
-                                                <Icon size={18} />
-                                            </div>
-                                            <div>
-                                                <span className={`block font-bold text-sm ${isSelected ? 'text-white' : 'text-gray-400'}`}>
-                                                    {cat.name}
-                                                </span>
-                                                <span className={`block text-[10px] font-medium mt-0.5 ${isSelected ? 'text-white/70' : 'text-gray-600'}`}>
-                                                    {cat.currentLoad} kg pending
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <ChevronRight size={16} className={isSelected ? 'text-white' : 'text-gray-600'} />
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
+        <Layout title="Districts" subtitle="Benchmark your society against other residential complexes in Mumbai">
 
-                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-[32px] p-6">
-                        <div className="flex items-center gap-3 mb-3">
-                            <ShieldCheck className="text-blue-400" size={24} />
-                            <h4 className="text-white font-bold">BMC Verified</h4>
-                        </div>
-                        <p className="text-xs text-blue-200/70 leading-relaxed">
-                            These centers are officially partnered or verified by municipal authorities to ensure zero-landfill processing and ethical recycling practices.
+            {/* Study Context Banner */}
+            <div className="bg-[#141f18] border border-[#4ade80]/20 rounded-2xl p-5 mb-6">
+                <div className="flex items-start gap-3">
+                    <span className="text-2xl">🔬</span>
+                    <div>
+                        <h3 className="text-sm font-semibold text-white mb-1">Field Study Context</h3>
+                        <p className="text-xs text-gray-400 leading-relaxed">
+                            District data is based on primary research aggregated across <strong className="text-white">multiple residential complexes</strong> in
+                            Kalyan, Dombivli, Ghatkopar, Bhandup & Thane (Mumbai Metropolitan Region).
+                            <strong className="text-[#4ade80]"> 80%</strong> of societies underestimated their weekly waste footprint by nearly half.
                         </p>
                     </div>
                 </div>
+            </div>
 
-                {/* Right Content: Detailed Info */}
-                <div className="xl:col-span-8">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={selectedCategory.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.2 }}
-                            className="h-full flex flex-col"
-                        >
-                            {/* Hero Card */}
-                            <div className={`relative overflow-hidden rounded-[32px] p-10 mb-6 bg-gradient-to-br ${selectedCategory.color} shadow-2xl border border-white/10`}>
-                                <div className="relative z-10">
-                                    <div className="w-16 h-16 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 text-white shadow-inner">
-                                        <selectedCategory.icon size={32} />
-                                    </div>
-                                    <h2 className="text-4xl font-black text-white mb-3 tracking-tight">
-                                        {selectedCategory.name}
-                                    </h2>
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="bg-white/20 border border-white/30 px-4 py-1.5 rounded-full backdrop-blur-md">
-                                            <span className="text-sm font-bold text-white tracking-wide">
-                                                Current Ward Accumulation: {selectedCategory.currentLoad} kg
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="bg-black/20 backdrop-blur-md border border-white/10 p-5 rounded-2xl max-w-2xl">
-                                        <p className="text-xs text-white/60 uppercase tracking-widest font-bold mb-2 flex items-center gap-2">
-                                            <Leaf size={14} /> Eco-Friendly Disposal Method
-                                        </p>
-                                        <p className="text-white text-base leading-relaxed font-medium">
-                                            {selectedCategory.ecoMethod}
-                                        </p>
-                                    </div>
-                                </div>
-                                
-                                {/* Background Icon */}
-                                <div className="absolute -bottom-10 -right-10 text-white opacity-5 pointer-events-none">
-                                    <selectedCategory.icon size={300} />
-                                </div>
-                            </div>
-
-                            {/* Nearby Centers List */}
-                            <div className="bg-[#141f18] border border-white/8 rounded-[32px] p-8 flex-1">
-                                <div className="flex items-center justify-between mb-8">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white mb-1">Authorized Recovery Centers</h3>
-                                        <p className="text-xs text-gray-500">Official industrial partners for processing {selectedCategory.name.toLowerCase()}</p>
-                                    </div>
-                                    <div className={`px-4 py-2 rounded-xl border ${selectedCategory.borderLight} ${selectedCategory.bgLight}`}>
-                                        <span className={`text-xs font-bold uppercase tracking-widest ${selectedCategory.textColor} flex items-center gap-2`}>
-                                            <Truck size={14} /> Routing
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {selectedCategory.centers.map((center, idx) => (
-                                        <div key={idx} className="bg-black/20 border border-white/5 hover:border-white/20 transition-all rounded-2xl p-6 group">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div>
-                                                    <h4 className="text-white font-bold text-lg mb-1 group-hover:text-[#4ade80] transition-colors">{center.name}</h4>
-                                                    <p className={`text-xs font-medium ${selectedCategory.textColor}`}>{center.type}</p>
-                                                </div>
-                                                <div className="bg-white/5 px-2 py-1 rounded text-[10px] font-mono text-gray-400">
-                                                    {center.dist}
-                                                </div>
-                                            </div>
-                                            
-                                            <div className="space-y-3 pt-4 border-t border-white/5">
-                                                <div className="flex items-center justify-between text-sm">
-                                                    <div className="flex items-center gap-2 text-gray-400">
-                                                        <MapPin size={14} />
-                                                        <span>{center.ward}</span>
-                                                    </div>
-                                                    <div className="bg-[#4ade80]/10 border border-[#4ade80]/20 px-2 py-0.5 rounded text-[10px] font-bold text-[#4ade80] tracking-wider uppercase">
-                                                        {center.pricePerKg} / KG
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center justify-between text-sm">
-                                                    <div className="flex items-center gap-2 text-gray-400">
-                                                        <Phone size={14} />
-                                                        <span>{center.phone}</span>
-                                                    </div>
-                                                    <button className="text-[10px] uppercase tracking-widest font-bold text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
-                                                        Dispatch <ExternalLink size={12} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                        </motion.div>
-                    </AnimatePresence>
+            {/* Your vs Community */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-[#141f18] border border-[#4ade80]/20 rounded-2xl p-5">
+                    <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">Your Society Avg</p>
+                    <p className="text-3xl font-bold text-[#4ade80]">{userPerHousehold || '—'}<span className="text-sm font-normal text-gray-400 ml-1">kg/house</span></p>
+                    <p className="text-xs text-gray-500 mt-1">Based on {profile.totalHouseholds} households</p>
                 </div>
+                <div className="bg-[#141f18] border border-white/8 rounded-2xl p-5">
+                    <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">District Avg</p>
+                    <p className="text-3xl font-bold text-white">{communityAvg}<span className="text-sm font-normal text-gray-400 ml-1">kg/house</span></p>
+                    <p className="text-xs text-gray-500 mt-1">Mumbai MMR survey average</p>
+                </div>
+                <div className={`rounded-2xl p-5 border ${diff <= 0 ? 'bg-green-500/8 border-green-500/25' : 'bg-red-500/8 border-red-500/25'}`}>
+                    <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">Your Standing</p>
+                    <p className={`text-3xl font-bold ${diff <= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {diff <= 0 ? '▼' : '▲'} {Math.abs(parseFloat(pctDiff))}%
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                        {entries.length === 0 ? 'Log data to compare' : diff <= 0 ? 'Below district average 🎉' : 'Above district average'}
+                    </p>
+                </div>
+            </div>
 
+            {/* Location Benchmarks */}
+            <div className="bg-[#141f18] border border-white/8 rounded-2xl p-5 mb-6">
+                <h3 className="text-sm font-semibold text-white mb-4">Daily Waste by Location (kg)</h3>
+                <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={COMMUNITY_DATA.locations} barSize={14}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff0a" />
+                        <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 11 }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} axisLine={false} tickLine={false} />
+                        <Tooltip contentStyle={{ background: '#0a120d', border: '1px solid #ffffff15', borderRadius: 8, color: '#fff', fontSize: 12 }} />
+                        <Legend wrapperStyle={{ fontSize: 11, color: '#9ca3af' }} />
+                        <Bar dataKey="wet" name="Wet" fill="#2dd4bf" radius={[3, 3, 0, 0]} />
+                        <Bar dataKey="dry" name="Dry" fill="#f59e0b" radius={[3, 3, 0, 0]} />
+                        <Bar dataKey="recyclable" name="Recyclable" fill="#60a5fa" radius={[3, 3, 0, 0]} />
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
+
+            {/* Radar + Key Findings */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {entries.length > 0 && (
+                    <div className="bg-[#141f18] border border-white/8 rounded-2xl p-5">
+                        <h3 className="text-sm font-semibold text-white mb-4">You vs. District</h3>
+                        <ResponsiveContainer width="100%" height={220}>
+                            <RadarChart data={radarData}>
+                                <PolarGrid stroke="#ffffff10" />
+                                <PolarAngleAxis dataKey="metric" tick={{ fill: '#6b7280', fontSize: 10 }} />
+                                <Radar name="You" dataKey="you" stroke="#4ade80" fill="#4ade80" fillOpacity={0.15} strokeWidth={2} />
+                                <Radar name="District" dataKey="community" stroke="#9ca3af" fill="#9ca3af" fillOpacity={0.1} strokeWidth={1.5} />
+                                <Legend wrapperStyle={{ fontSize: 11, color: '#9ca3af' }} />
+                            </RadarChart>
+                        </ResponsiveContainer>
+                    </div>
+                )}
+
+                <div className="bg-[#141f18] border border-white/8 rounded-2xl p-5">
+                    <h3 className="text-sm font-semibold text-white mb-4">Key Survey Findings</h3>
+                    <div className="space-y-3">
+                        {[
+                            { icon: '⚠️', text: '80% of surveyed societies underestimated weekly waste by ~50%', color: 'border-amber-500/30' },
+                            { icon: '🔎', text: 'Dry waste blindspot: many residents categorize soiled plastics as wet waste, messing up bulk tracking', color: 'border-red-500/30' },
+                            { icon: '✅', text: '70% of society management willing to use an app for vendor tracking and tips', color: 'border-green-500/30' },
+                            { icon: '🧴', text: 'Single-use plastics prevalent across all surveyed locations (Kalyan to Ghatkopar)', color: 'border-blue-500/30' },
+                            { icon: '🌿', text: 'Wet waste awareness is highly dependent on vendor pickup schedules', color: 'border-teal-500/30' },
+                        ].map(({ icon, text, color }) => (
+                            <div key={text} className={`flex items-start gap-3 rounded-xl border ${color} bg-white/3 p-3`}>
+                                <span className="text-sm flex-shrink-0">{icon}</span>
+                                <p className="text-xs text-gray-300 leading-relaxed">{text}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </Layout>
     );
